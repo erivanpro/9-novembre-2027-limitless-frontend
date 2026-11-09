@@ -1,0 +1,58 @@
+buildscript {
+    ext {
+       buildToolsVersion = "36.0.0"
+        minSdkVersion = 24
+        compileSdkVersion = 36
+        targetSdkVersion = 36
+        ndkVersion = "27.1.12297006"
+         kotlinVersion = "2.1.20"  
+    }
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+   classpath("com.android.tools.build:gradle:8.12.1")
+        classpath("com.facebook.react:react-native-gradle-plugin")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+        classpath 'com.google.gms:google-services:4.4.2'
+    }
+}
+
+apply plugin: "com.facebook.react.rootproject"
+
+// allprojects {
+//   repositories { 
+//     google()
+//     mavenCentral()
+//   }
+// configurations.all {
+//     resolutionStrategy.force "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+//     //  resolutionStrategy {
+//     //         force "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion",
+//     //               "org.jetbrains.kotlin:kotlin-stdlib-common:$kotlinVersion",
+//     //               "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion",
+//     //               "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+//     //     }
+// }
+// }
+// /**
+//  * Kotlin 2.1+ requires the Compose Compiler plugin when compose is enabled.
+//  * stripe_stripe-react-native uses Compose. Apply the plugin + set compiler version.
+//  * Mapping: Kotlin 2.1.x ↔ Compose Compiler 2.1.x
+//  */
+// subprojects { sub ->
+//   if (sub.path == ":stripe_stripe-react-native" || sub.name == "stripe_stripe-react-native") {
+//     sub.apply plugin: "org.jetbrains.kotlin.plugin.compose"
+
+//     sub.plugins.withId("com.android.library") {
+//       def androidExt = sub.extensions.findByName("android")
+//       if (androidExt != null) {
+//         // Stripe's module uses Compose; ensure options are set
+//         androidExt.buildFeatures { compose = true }
+//         // For Kotlin 2.1+, kotlinCompilerExtensionVersion is not needed
+//         // The compose plugin handles the compiler version automatically
+//       }
+//     }
+//   }
+// }

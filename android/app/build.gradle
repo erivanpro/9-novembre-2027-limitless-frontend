@@ -1,0 +1,142 @@
+apply plugin: "com.android.application"
+apply plugin: "org.jetbrains.kotlin.android"
+apply plugin: "com.facebook.react"
+apply plugin: "com.google.gms.google-services"
+// plugins {
+//   id "com.android.application"
+//   id "com.facebook.react"
+//   // id "com.google.gms.google-services"
+//   id "org.jetbrains.kotlin.android"
+// // id "org.jetbrains.kotlin.plugin.compose"
+ 
+
+// }
+
+
+/**
+ * This is the configuration block to customize your React Native Android app.
+ * By default you don't need to apply any configuration, just uncomment the lines you need.
+ */
+react {
+  autolinkLibrariesWithApp()
+  /* Folders */
+  // root = file("../")
+  // reactNativeDir = file("../node_modules/react-native")
+  // codegenDir = file("../node_modules/@react-native/codegen")
+  // cliFile = file("../node_modules/react-native/cli.js")
+
+  /* Variants */
+  // debuggableVariants = ["liteDebug", "prodDebug"]
+
+  /* Bundling */
+  // nodeExecutableAndArgs = ["node"]
+  // bundleCommand = "ram-bundle"
+  // bundleConfig = file(../rn-cli.config.js)
+  // bundleAssetName = "MyApplication.android.bundle"
+  // entryFile = file("../js/MyApplication.android.js")
+  // extraPackagerArgs = []
+
+  /* Hermes Commands */
+  // hermesCommand = "$rootDir/my-custom-hermesc/bin/hermesc"
+  // hermesFlags = ["-O", "-output-source-map"]
+}
+
+/** Toggle minify for release */
+def enableProguardInReleaseBuilds = false
+
+def releaseSigningPropertiesFile = rootProject.file("keystore.properties")
+def releaseSigningProperties = new Properties()
+if (releaseSigningPropertiesFile.exists()) {
+  releaseSigningPropertiesFile.withInputStream { stream ->
+    releaseSigningProperties.load(stream)
+  }
+}
+
+def releaseTaskRequested = gradle.startParameter.taskNames.any {
+  it.toLowerCase().contains("release")
+}
+if (releaseTaskRequested && !releaseSigningPropertiesFile.exists()) {
+  throw new GradleException(
+    "Missing android/keystore.properties. Copy android/keystore.properties.example and enter the existing Play signing credentials locally."
+  )
+}
+
+
+/** JSC fallback flavor */
+def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
+
+android {
+    //  buildFeatures {
+    //     compose = true
+    // }
+    
+  ndkVersion rootProject.ext.ndkVersion
+  buildToolsVersion rootProject.ext.buildToolsVersion
+  compileSdk rootProject.ext.compileSdkVersion
+
+  namespace "com.go.limitless.app"
+
+  defaultConfig {
+    applicationId "com.go.limitless.app"
+    minSdkVersion rootProject.ext.minSdkVersion
+    targetSdkVersion rootProject.ext.targetSdkVersion
+    versionCode 15
+    versionName "8.1.2"
+  }
+
+  // ✅ Java/Kotlin 17 for AGP 8.x + Kotlin 2.1.x
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_17
+    targetCompatibility JavaVersion.VERSION_17
+  }
+  kotlinOptions {
+    jvmTarget = "17"
+  }
+   
+  signingConfigs {
+    debug {
+      storeFile file('debug.keystore')
+      storePassword 'android'
+      keyAlias 'androiddebugkey'
+      keyPassword 'android'
+    }
+    release {
+      if (releaseSigningPropertiesFile.exists()) {
+        storeFile file(releaseSigningProperties.getProperty('storeFile'))
+        storePassword releaseSigningProperties.getProperty('storePassword')
+        keyAlias releaseSigningProperties.getProperty('keyAlias')
+        keyPassword releaseSigningProperties.getProperty('keyPassword')
+      }
+    }
+  }
+
+  buildTypes {
+    debug {
+      signingConfig signingConfigs.debug
+    }
+    release {
+      signingConfig signingConfigs.release
+      minifyEnabled enableProguardInReleaseBuilds
+      proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+    }
+  }
+}
+
+dependencies {
+  // The version of react-native is set by the React Native Gradle Plugin
+  implementation("com.facebook.react:react-android")
+  // implementation(platform("androidx.compose:compose-bom:2024.06.00"))
+  // implementation("androidx.compose.ui:ui")
+  // implementation("androidx.compose.runtime:runtime")
+  // implementation project(':react-native-splash-screen')
+
+  if (hermesEnabled.toBoolean()) {
+    implementation("com.facebook.react:hermes-android")
+  } else {
+    implementation jscFlavor
+  }
+}
+
+/** Fonts autolinking for react-native-vector-icons */
+apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
+

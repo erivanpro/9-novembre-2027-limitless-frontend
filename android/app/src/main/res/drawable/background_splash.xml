@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:drawable="@color/bootsplash_background" />
+
+    <!-- Can be used to add small logo in center -->
+    <!-- <item
+        android:width="200dp"
+        android:height="200dp"
+        android:drawable="@drawable/fullscreen_splash"
+        android:gravity="center" /> -->
+
+</layer-list>
